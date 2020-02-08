@@ -1,0 +1,65 @@
+.container {
+  height: calc(100% - 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.header {
+  width: 90%;
+  padding: 20px 0;
+}
+
+.game-grid {
+  height: 35vw;
+  width: 35vw;
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  flex: 1;
+}
+
+.cell {
+  flex: 1;
+  border: 1px solid black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.shape {
+  width: 70%;
+  height: 70%;
+  border-radius: 50%;
+}
+
+.shape-blue {
+  background-color: #2256ff;
+}
+
+.shape-red {
+  background-color: #ff0000bf;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .game-grid {
+    height: 60vw;
+    width: 60vw;
+  }
+}
+
+@media (max-width: 678px) {
+  .game-grid {
+    height: 95vw;
+    width: 95vw;
+  }
+}

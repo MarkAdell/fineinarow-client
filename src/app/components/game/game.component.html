@@ -1,1 +1,12 @@
-<p>game works!</p>
+<div class="container">
+  <div class="header">
+    URL: http://localhost:4200/game
+  </div>
+  <div class="game-grid">
+    <div class="row" *ngFor="let row of gameGridArray; let i = index">
+      <div class="cell" *ngFor="let cell of row; let y = index" (click)="onCellClick(i, y)">
+        <div class="shape" [ngClass]="getShapeClasses(cell)"></div>
+      </div>
+    </div>
+  </div>
+</div>
