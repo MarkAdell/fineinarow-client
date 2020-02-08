@@ -1,0 +1,17 @@
+header {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+  width: 100%;
+  background-color: #3f51b5;
+  color: #fff;
+}
+
+.title {
+  color: #fff;
+  cursor: pointer;
+  font-size: 2em;
+  font-weight: bold;
+  letter-spacing: 4px;
+  text-decoration: none;
+}
