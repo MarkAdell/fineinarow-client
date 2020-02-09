@@ -1,1 +1,13 @@
-<p>room-join works!</p>
+<div class="container">
+  <h1>Join a room</h1>
+  <form>
+    <mat-form-field>
+      <mat-label>Room ID</mat-label>
+      <input [formControl]="roomId" matInput placeholder="Room ID">
+      <mat-error *ngIf="roomId.hasError('required')">
+        Room ID is <strong>required</strong>
+      </mat-error>
+    </mat-form-field>
+    <a [disabled]="!roomId.valid" mat-raised-button color="primary">Join</a>
+  </form>
+</div>

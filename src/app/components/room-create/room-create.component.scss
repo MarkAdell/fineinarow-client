@@ -1,0 +1,41 @@
+.container {
+  height: calc(100% - 60px);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.content {
+  margin: 50px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.room-id-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.room-id-container button {
+  line-height: 25px;
+}
+
+.room-id {
+  font-size: 1.5em;
+  margin: 0 5px 0 0;
+}
+
+.tip {
+  color: #808080;
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.title {
+  margin-top: 50px;
+  font-size: 2.5em;
+  font-weight: 500;
+}
+
