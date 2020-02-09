@@ -11,6 +11,12 @@ export class HomeComponent implements OnInit {
   constructor(private gameService: GameService) { }
 
   ngOnInit(): void {
+    this.userLeaveEmitter();
+    localStorage.clear();
+  }
+
+  private userLeaveEmitter(): void {
+    this.gameService.userLeave();
   }
 
 }

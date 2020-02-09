@@ -15,7 +15,7 @@
 .room-id-container {
   display: flex;
   align-items: center;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
 }
 
 .room-id-container button {
@@ -39,3 +39,11 @@
   font-weight: 500;
 }
 
+.start-game-btn {
+  height: 50px;
+  width: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+}

@@ -1,11 +1,19 @@
 <div class="container">
   <div class="header">
-    URL: http://localhost:4200/game
+    <div class="room-id-container">
+      <p class="room-id">Room ID: {{roomId}}</p>
+      <button class="main-action-btn" mat-stroked-button ngxClipboard [cbContent]="roomId">
+        Copy
+      </button>
+    </div>
+    <p class="tip">(Share it with your friend!)</p>
   </div>
-  <div class="game-grid">
-    <div class="row" *ngFor="let row of gameGridArray; let i = index">
-      <div class="cell" *ngFor="let cell of row; let y = index" (click)="onCellClick(i, y)">
-        <div class="shape" [ngClass]="getShapeClasses(cell)"></div>
+  <div class="game-grid-container">
+    <div class="game-grid">
+      <div class="row" *ngFor="let row of gameGridArray; let i = index">
+        <div class="cell" *ngFor="let cell of row; let y = index" (click)="onCellClick(i, y)">
+          <div class="shape" [ngClass]="getShapeClasses(cell)"></div>
+        </div>
       </div>
     </div>
   </div>

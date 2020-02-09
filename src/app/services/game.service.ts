@@ -10,7 +10,6 @@ export class GameService {
   private socket: SocketIOClient.Socket;
 
   constructor() {
-    console.log('hi');
     this.socket = io(this.apiURL);
   }
 
@@ -22,12 +21,16 @@ export class GameService {
     this.socket.emit('join room', { roomId });
   }
 
-  public makeMove(roomId: string, row: number, col: number): void {
-    this.socket.emit('new move', { roomId, row, col });
+  public makeMove(roomId: string, playerColor: 'red' | 'blue', row: number, col: number): void {
+    this.socket.emit('new move', { roomId, playerColor, row, col });
   }
 
   public playerWon(roomId: string, winningPlayer: string): void {
     this.socket.emit('player win', { roomId, winningPlayer });
+  }
+
+  public userLeave(): void {
+    this.socket.emit('user leave');
   }
 
   public newGame(roomId: string): void {
@@ -40,7 +43,7 @@ export class GameService {
 
   public onRoomJoined(): Observable<any> {
     return Observable.create((observable) => {
-      this.socket.on('room joined', (data: { roomId: string }) => {
+      this.socket.on('room join', (data: { roomId: string }) => {
         observable.next(data);
       });
     });
@@ -48,15 +51,15 @@ export class GameService {
 
   public onGameStart(): Observable<any> {
     return Observable.create((observable) => {
-      this.socket.on('room joined', () => {
+      this.socket.on('game start', () => {
         observable.next();
       });
     });
   }
 
-  public onNewMove(): Observable<any> {
+  public onNewMove() {
     return Observable.create((observable) => {
-      this.socket.on('new move', (data: { row: number, col: number }) => {
+      this.socket.on('new move', (data: { playerColor: 'red', 'blue', row: number, col: number }) => {
         observable.next(data);
       });
     });

@@ -7,7 +7,11 @@
       <mat-error *ngIf="roomId.hasError('required')">
         Room ID is <strong>required</strong>
       </mat-error>
+      <mat-error *ngIf="!roomId.hasError('required') && roomId.hasError('minlength')">
+        Room ID must be 5 characters
+      </mat-error>
     </mat-form-field>
-    <a [disabled]="!roomId.valid" mat-raised-button color="primary">Join</a>
+    <p *ngIf="!otherPlayerJoined && isRoomJoined">This room is empty, waiting for a player to join...</p>
+    <a [disabled]="!roomId.valid && !isRoomJoined" mat-raised-button (click)="onJoinClick()" color="primary">Join</a>
   </form>
 </div>
