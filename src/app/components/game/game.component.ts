@@ -1,8 +1,9 @@
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { GameService } from './../../services/game.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import swal from 'sweetalert2';
 
 @Component({
   selector: 'app-game',
@@ -14,9 +15,17 @@ export class GameComponent implements OnInit, OnDestroy {
   roomId: string = '';
   playerColor: 'red' | 'blue';
   gameGridArray: Cell[][] = [];
+  swalPromise: any;
 
-  onNewMoveSub: Subscription;
   onUserLeaveSub: Subscription;
+  onNewMoveSub: Subscription;
+  onPlayerWinSub: Subscription;
+  onNewGameSub: Subscription;
+  onGameCancelSub: Subscription;
+
+  @HostListener("window:beforeunload", ["$event"]) unloadHandler(event: Event) {
+    localStorage.clear();
+  }
 
   constructor(
     private gameService: GameService,
@@ -30,6 +39,9 @@ export class GameComponent implements OnInit, OnDestroy {
     this.initGameGridArray();
     this.onUserLeaveListener();
     this.onNewMoveListener();
+    this.onPlayerWinListener();
+    this.onNewGameListener();
+    this.onGameCancelListener();
   }
 
   private navigateToHomeIfNotAuthorized(): void {
@@ -46,7 +58,7 @@ export class GameComponent implements OnInit, OnDestroy {
   private initGameGridArray(): void {
     this.gameGridArray.length = 0;
     for (let i = 0; i < 15; i++) {
-      const row = Array(15).fill({ shown: false, shape: '' });
+      const row = Array(15).fill({ shown: false, playerColor: '' });
       this.gameGridArray.push(row);
     }
   }
@@ -65,8 +77,8 @@ export class GameComponent implements OnInit, OnDestroy {
         || (playerColor === 'blue' && redMovesCount - blueMovesCount === 1);
   }
 
-  public getShapeClasses(cell: Cell): string {
-    let classes = cell.shape === 'blue' ? 'shape-blue' : 'shape-red';
+  getShapeClasses(cell: Cell): string {
+    let classes = cell.playerColor === 'blue' ? 'shape-blue' : 'shape-red';
     classes = classes + (!cell.played ? ' hidden' : '');
     return classes;
   }
@@ -74,20 +86,20 @@ export class GameComponent implements OnInit, OnDestroy {
   private getNumberOfPlayerMoves(playerColor: 'red' | 'blue'): number {
     let numerOfMoves = 0;
     for (let i = 0; i < this.gameGridArray.length; i++) {
-      numerOfMoves += this.gameGridArray[i].filter(cell => (cell.played && cell.shape === playerColor)).length;
+      numerOfMoves += this.gameGridArray[i].filter(cell => (cell.played && cell.playerColor === playerColor)).length;
     }
     return numerOfMoves;
   }
 
-  private checkWinner(gameGridArray): void {
+  private checkWinner(gameGridArray): { isThereWinner: boolean, winnerColor?: 'red' | 'blue' | '' } {
     let sameShapeInRowCount = 0;
     for (let i = 0; i < gameGridArray.length; i++) {
       for (let y = 1; y < gameGridArray.length; y++) {
-        // console.log(this.gameGridArray[i][y]);
         if (this.areSimilarCells(gameGridArray[i][y], gameGridArray[i][y - 1])) {
           sameShapeInRowCount++;
           if (sameShapeInRowCount === 4) {
             console.log('winner!');
+            return { isThereWinner: true, winnerColor: gameGridArray[i][y].playerColor }
           }
         } else {
           sameShapeInRowCount = 0;
@@ -98,11 +110,11 @@ export class GameComponent implements OnInit, OnDestroy {
     sameShapeInRowCount = 0;
     for (let i = 0; i < gameGridArray.length; i++) {
       for (let y = 1; y < gameGridArray.length; y++) {
-        // console.log(this.gameGridArray[y][i]);
         if (this.areSimilarCells(gameGridArray[y][i], gameGridArray[y - 1][i])) {
           sameShapeInRowCount++;
           if (sameShapeInRowCount === 4) {
             console.log('winner!');
+            return { isThereWinner: true, winnerColor: gameGridArray[y][i].playerColor };
           }
         } else {
           sameShapeInRowCount = 0;
@@ -113,11 +125,11 @@ export class GameComponent implements OnInit, OnDestroy {
     sameShapeInRowCount = 0;
     for (let i = 1; i < gameGridArray.length - 3; i++) {
       for (let y = 1, j = i; j < gameGridArray.length; y++, j++) {
-        // console.log(this.gameGridArray[y][j]);
         if (this.areSimilarCells(gameGridArray[y][j], gameGridArray[y - 1][j - 1])) {
           sameShapeInRowCount++;
           if (sameShapeInRowCount === 4) {
             console.log('winner!');
+            return { isThereWinner: true, winnerColor: gameGridArray[y][j].playerColor };
           }
         } else {
           sameShapeInRowCount = 0;
@@ -128,11 +140,11 @@ export class GameComponent implements OnInit, OnDestroy {
     sameShapeInRowCount = 0;
     for (let i = 2; i < gameGridArray.length - 3; i++) {
       for (let y = i, j = 1; y < gameGridArray.length; y++, j++) {
-        // console.log(this.gameGridArray[y][j]);
         if (this.areSimilarCells(gameGridArray[y][j], gameGridArray[y - 1][j - 1])) {
           sameShapeInRowCount++;
           if (sameShapeInRowCount === 4) {
             console.log('winner!');
+            return { isThereWinner: true, winnerColor: gameGridArray[y][j].playerColor };
           }
         } else {
           sameShapeInRowCount = 0;
@@ -143,11 +155,11 @@ export class GameComponent implements OnInit, OnDestroy {
     sameShapeInRowCount = 0;
     for (let i = gameGridArray.length - 2; i > 2; i--) {
       for (let y = 1, j = i; j >= 0; y++ , j--) {
-        // console.log(this.gameGridArray[y][j]);
         if (this.areSimilarCells(gameGridArray[y][j], gameGridArray[y - 1][j + 1])) {
           sameShapeInRowCount++;
           if (sameShapeInRowCount === 4) {
             console.log('winner!');
+            return { isThereWinner: true, winnerColor: gameGridArray[y][j].playerColor };
           }
         } else {
           sameShapeInRowCount = 0;
@@ -158,21 +170,22 @@ export class GameComponent implements OnInit, OnDestroy {
     sameShapeInRowCount = 0;
     for (let i = 2; i < gameGridArray.length - 3; i++) {
       for (let y = i, j = gameGridArray.length - 2; y < gameGridArray.length; y++ , j--) {
-        // console.log(this.gameGridArray[y][j]);
         if (this.areSimilarCells(gameGridArray[y][j], gameGridArray[y - 1][j + 1])) {
           sameShapeInRowCount++;
           if (sameShapeInRowCount === 4) {
             console.log('winner!');
+            return { isThereWinner: true, winnerColor: gameGridArray[y][j].playerColor };
           }
         } else {
           sameShapeInRowCount = 0;
         }
       }
     }
+    return { isThereWinner: false };
   }
 
   private areSimilarCells(cell1: Cell, cell2: Cell): boolean {
-    return cell1.played && cell2.played && (cell1.shape === cell2.shape);
+    return cell1.played && cell2.played && (cell1.playerColor === cell2.playerColor);
   }
 
   private onUserLeaveListener(): void {
@@ -186,10 +199,68 @@ export class GameComponent implements OnInit, OnDestroy {
     this.gameService.makeMove(roomId, playerColor, row, col);
   }
 
+  private playerWinEmitter(roomId: string, playerColor: 'red' | 'blue' | ''): void {
+    this.gameService.playerWin(roomId, playerColor);
+  }
+
+  private newGameEmitter(roomId: string): void {
+    this.gameService.newGame(roomId);
+  }
+
+  private onNewGameListener(): void {
+    this.onNewGameSub = this.gameService.onNewGame().subscribe(() => {
+      swal.close({ value: 'only close modal' });
+      this.initGameGridArray();
+    });
+  }
+
+  private gameCancelEmitter(roomId: string): void {
+    this.gameService.cancelGame(roomId);
+  }
+
+  private onGameCancelListener(): void {
+    this.onGameCancelSub = this.gameService.onGameCancel().subscribe(() => {
+      this.snackBar.open('Game canceled', 'x', { duration: 3000 });
+      swal.close({ value: 'only close modal' });
+      this.router.navigate(['/']);
+    });
+  }
+
+  private buildWinnerModalTitleHTML(winningPlayer: 'red' | 'blue'): string {
+    const winnigPlayerCSSColor = winningPlayer === 'red' ? '#ff0000bf' : '#2256ff';
+    const modalHTML = `
+      <span style="color:${winnigPlayerCSSColor}">${winningPlayer}</span>&nbsp;player won!
+    `;
+    return modalHTML;
+  }
+
+  private onPlayerWinListener(): void {
+    this.onPlayerWinSub = this.gameService.onPlayerWin().subscribe((data) => {
+      swal.fire({
+        title: this.buildWinnerModalTitleHTML(data.winningPlayer),
+        text: 'Would you like to play again?',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value === true) { // don't remove === true, I don't want other truthy values to pass
+          this.newGameEmitter(this.roomId);
+        } else if (!result.value) { // don't make it else, there are other truthy values than true
+          this.gameCancelEmitter(this.roomId);
+        }
+      });
+    });
+  }
+
   private onNewMoveListener(): void {
     this.onNewMoveSub = this.gameService.onNewMove().subscribe((data) => {
-      this.gameGridArray[data.row][data.col] = { played: true, shape: data.playerColor };
-      this.checkWinner(this.gameGridArray);
+      this.gameGridArray[data.row][data.col] = { played: true, playerColor: data.playerColor };
+      if (this.playerColor === 'red') {
+        const checkWinnerResult = this.checkWinner(this.gameGridArray);
+        if (checkWinnerResult.isThereWinner) {
+          this.playerWinEmitter(this.roomId, checkWinnerResult.winnerColor);
+        }
+      }
     });
   }
 
@@ -200,11 +271,20 @@ export class GameComponent implements OnInit, OnDestroy {
     if (this.onUserLeaveSub) {
       this.onUserLeaveSub.unsubscribe();
     }
+    if (this.onNewGameSub) {
+      this.onNewGameSub.unsubscribe();
+    }
+    if (this.onGameCancelSub) {
+      this.onGameCancelSub.unsubscribe();
+    }
+    if (this.onPlayerWinSub) {
+      this.onPlayerWinSub.unsubscribe();
+    }
   }
 
 }
 
 export interface Cell {
   played: boolean;
-  shape: 'blue' | 'red';
+  playerColor: 'blue' | 'red';
 }

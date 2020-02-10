@@ -13,8 +13,4 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onTitleClick(): void {
-    this.router.navigate(['']);
-  }
-
 }
