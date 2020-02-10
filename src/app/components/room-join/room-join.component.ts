@@ -13,7 +13,7 @@ export class RoomJoinComponent implements OnInit {
 
   otherPlayerJoined: boolean = false;
   isRoomJoined: boolean = false;
-  roomId = new FormControl('', [Validators.required, Validators.minLength(5)]);
+  roomId = new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(5)]);
 
   constructor(
     private gameService: GameService,

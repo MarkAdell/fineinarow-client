@@ -3,11 +3,11 @@
   <form>
     <mat-form-field>
       <mat-label>Room ID</mat-label>
-      <input [formControl]="roomId" matInput placeholder="Room ID">
+      <input minlength="5" maxlength="5" [formControl]="roomId" matInput placeholder="Room ID">
       <mat-error *ngIf="roomId.hasError('required')">
         Room ID is <strong>required</strong>
       </mat-error>
-      <mat-error *ngIf="!roomId.hasError('required') && roomId.hasError('minlength')">
+      <mat-error *ngIf="!roomId.hasError('required') && (roomId.hasError('minlength') || roomId.hasError('maxlength'))">
         Room ID must be 5 characters
       </mat-error>
     </mat-form-field>
