@@ -13,3 +13,11 @@
   align-items: center;
   font-size: 35px;
 }
+
+@media (max-width: 768px) {
+  .main-action-btn {
+    height: 80px;
+    width: 240px;
+    font-size: 25px;
+  }
+}
