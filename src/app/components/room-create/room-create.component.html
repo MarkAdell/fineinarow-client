@@ -2,13 +2,21 @@
   <h1 *ngIf="!isRoomCreated" class="title">Creating Room...</h1>
   <h1 *ngIf="isRoomCreated" class="title">Created A Room</h1>
   <div class="content">
-    <div class="room-id-container">
-      <p class="room-id">Room ID: {{roomId}}</p>
-      <button class="main-action-btn" mat-stroked-button ngxClipboard [cbContent]="roomId">
-        Copy
-      </button>
+    <div class="game-url-container">
+      <div class="game-url">
+        <p>{{roomId}}</p>
+        <button mat-stroked-button ngxClipboard [cbContent]="roomId">
+          Copy
+        </button>
+      </div>
+      <div class="game-url">
+        <p>{{roomURL}}</p>
+        <button mat-stroked-button ngxClipboard [cbContent]="roomURL">
+          Copy
+        </button>
+      </div>
     </div>
-    <p class="tip">(Share it with your friend!)</p>
+    <p class="tip">(Share the room ID or the URL with your friend!)</p>
   </div>
   <p *ngIf="!otherPlayerJoined && isRoomCreated">Waiting for the other player to join...</p>
   <!-- <a *ngIf="otherPlayerJoined" mat-raised-button color="primary" routerLink="/game">Start Game</a> -->

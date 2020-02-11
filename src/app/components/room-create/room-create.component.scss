@@ -12,19 +12,24 @@
   align-items: center;
 }
 
-.room-id-container {
-  display: flex;
-  align-items: center;
+.game-url-container {
   margin-bottom: 3px;
 }
 
-.room-id-container button {
-  line-height: 25px;
+.game-url {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 5px;
 }
 
-.room-id {
+.game-url p {
   font-size: 1.5em;
   margin: 0 5px 0 0;
+}
+
+.game-url button {
+  line-height: 25px;
 }
 
 .tip {
@@ -46,4 +51,13 @@
   justify-content: center;
   align-items: center;
   font-size: 1.5em;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2.2em;
+  }
+  .game-url p {
+    font-size: 1.2em;
+  }
 }

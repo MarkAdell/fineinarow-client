@@ -1,7 +1,7 @@
 import { GameService } from './../../services/game.service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
@@ -18,16 +18,27 @@ export class RoomJoinComponent implements OnInit {
   constructor(
     private gameService: GameService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit(): void {
     this.onRoomJoinedListener();
     this.onGameStartListener();
     this.onCustomErrorListener();
+    this.joinRoomFromURL();
   }
 
-  onJoinClick() {
+  joinRoomFromURL(): void {
+    const roomId = this.route.snapshot.queryParams.roomID;
+    if (roomId && roomId.length === 5) {
+      this.gameService.joinRoom(roomId);
+    } else if (roomId){
+      this.snackBar.open('Invalid room URL', 'x', { duration: 3000 });
+    }
+  }
+
+  onJoinClick(): void {
     if (this.roomId.valid) {
       this.gameService.joinRoom(this.roomId.value);
     }

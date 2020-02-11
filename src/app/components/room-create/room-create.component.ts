@@ -1,6 +1,7 @@
 import { GameService } from './../../services/game.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-room-create',
@@ -12,6 +13,7 @@ export class RoomCreateComponent implements OnInit {
   otherPlayerJoined: boolean = false;
   isRoomCreated: boolean = false;
   roomId: string = '';
+  roomURL: string = '';
 
   constructor(
     private gameService: GameService,
@@ -32,6 +34,7 @@ export class RoomCreateComponent implements OnInit {
     this.gameService.onRoomJoined().subscribe((data) => {
       this.isRoomCreated = true;
       this.roomId = data.roomId; // to be copied clicking the copy button
+      this.roomURL = `${environment.apiURL}join?roomID=${this.roomId}`;
       localStorage.setItem('joinedRoomID', data.roomId);
       localStorage.setItem('player', 'red');
     });

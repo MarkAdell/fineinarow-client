@@ -1,4 +1,4 @@
 export const environment = {
-  apiURL: 'https://fiveinrow.com/',
+  apiURL: 'fiveinrow.com/',
   production: true
 };
