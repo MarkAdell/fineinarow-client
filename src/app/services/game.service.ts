@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Observable, observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameService {
-  private apiURL = 'http://localhost:3000';
+  private apiURL = environment.apiURL;
   private socket: SocketIOClient.Socket;
 
   constructor() {
