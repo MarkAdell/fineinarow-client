@@ -67,8 +67,8 @@ export class GameComponent implements OnInit, OnDestroy {
 
   private initGameGridArray(): void {
     this.gameGridArray.length = 0;
-    for (let i = 0; i < 15; i++) {
-      const row = Array(15).fill({ shown: false, playerColor: '' });
+    for (let i = 0; i < 13; i++) {
+      const row = Array(13).fill({ shown: false, playerColor: '' });
       this.gameGridArray.push(row);
     }
   }
