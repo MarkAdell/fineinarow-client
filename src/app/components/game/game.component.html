@@ -1,14 +1,24 @@
 <div class="container">
-  <div class="header">
-    <div class="room-id-container">
-      <p class="room-id">Room ID: {{roomId}}</p>
-      <button class="main-action-btn" mat-stroked-button ngxClipboard [cbContent]="roomId">
-        Copy
-      </button>
+  <div class="game-container">
+    <div class="header">
+      <div class="score">
+        <p>Red Player: {{score.redPlayerScore}}</p>
+        <p>Blue Player: {{score.bluePlayerScore}}</p>
+      </div>
+      <div [ngClass]="{'visibility-hidden': gameInProgress}" class="game-end-container">
+        <p>
+          <span [ngClass]="winningPlayer==='red'? 'red-player-color' : 'blue-player-color'">
+            {{winningPlayer}}</span> player won!
+        </p>
+        <div class="game-end-question">
+          <p>Would you like to play again?</p>
+          <div class="game-end-question-actions">
+            <button (click)="newGameQuestionBtnClicked(true)" mat-stroked-button color="primary">Yes</button>
+            <button (click)="newGameQuestionBtnClicked(false)" mat-stroked-button color="primary">No</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <p class="tip">(Share it with your friend!)</p>
-  </div>
-  <div class="game-grid-container">
     <div class="game-grid">
       <div class="row" *ngFor="let row of gameGridArray; let i = index">
         <div class="cell" *ngFor="let cell of row; let y = index" (click)="onCellClick(i, y)">

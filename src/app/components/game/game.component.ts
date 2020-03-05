@@ -15,7 +15,9 @@ export class GameComponent implements OnInit, OnDestroy {
   roomId: string = '';
   playerColor: 'red' | 'blue';
   gameGridArray: Cell[][] = [];
-  swalPromise: any;
+  score: Score;
+  gameInProgress: boolean = true;
+  winningPlayer: 'red' | 'blue';
 
   onUserLeaveSub: Subscription;
   onNewMoveSub: Subscription;
@@ -36,6 +38,7 @@ export class GameComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.navigateToHomeIfNotAuthorized();
     this.initPlayerInfo();
+    this.initScore();
     this.initGameGridArray();
     this.onUserLeaveListener();
     this.onNewMoveListener();
@@ -55,6 +58,13 @@ export class GameComponent implements OnInit, OnDestroy {
     this.playerColor = <'red' | 'blue'>localStorage.getItem('player');
   }
 
+  private initScore(): void {
+    this.score = {
+      redPlayerScore: 0,
+      bluePlayerScore: 0,
+    };
+  }
+
   private initGameGridArray(): void {
     this.gameGridArray.length = 0;
     for (let i = 0; i < 15; i++) {
@@ -64,7 +74,7 @@ export class GameComponent implements OnInit, OnDestroy {
   }
 
   public onCellClick(row: number, col: number): void {
-    if (this.gameGridArray[row][col].played) { return; }
+    if (!this.gameInProgress || this.gameGridArray[row][col].played) { return; }
     const redMovesCount = this.getNumberOfPlayerMoves('red');
     const blueMovesCount = this.getNumberOfPlayerMoves('blue');
     if (this.isPlayerTurn(this.playerColor, redMovesCount, blueMovesCount)) {
@@ -79,7 +89,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   getShapeClasses(cell: Cell): string {
     let classes = cell.playerColor === 'blue' ? 'shape-blue' : 'shape-red';
-    classes = classes + (!cell.played ? ' hidden' : '');
+    classes = classes + (!cell.played ? ' display-hidden' : '');
     return classes;
   }
 
@@ -199,8 +209,8 @@ export class GameComponent implements OnInit, OnDestroy {
     this.gameService.makeMove(roomId, playerColor, row, col);
   }
 
-  private playerWinEmitter(roomId: string, playerColor: 'red' | 'blue' | ''): void {
-    this.gameService.playerWin(roomId, playerColor);
+  private playerWinEmitter(roomId: string, playerColor: 'red' | 'blue' | '', score: Score): void {
+    this.gameService.playerWin(roomId, playerColor, score);
   }
 
   private newGameEmitter(roomId: string): void {
@@ -209,7 +219,7 @@ export class GameComponent implements OnInit, OnDestroy {
 
   private onNewGameListener(): void {
     this.onNewGameSub = this.gameService.onNewGame().subscribe(() => {
-      swal.close({ value: 'only close modal' });
+      this.gameInProgress = true;
       this.initGameGridArray();
     });
   }
@@ -221,12 +231,11 @@ export class GameComponent implements OnInit, OnDestroy {
   private onGameCancelListener(): void {
     this.onGameCancelSub = this.gameService.onGameCancel().subscribe(() => {
       this.snackBar.open('Game canceled', 'x', { duration: 3000 });
-      swal.close({ value: 'only close modal' });
       this.router.navigate(['/']);
     });
   }
 
-  private buildWinnerModalTitleHTML(winningPlayer: 'red' | 'blue'): string {
+  public buildWinnerModalTitleHTML(winningPlayer: 'red' | 'blue'): string {
     const winnigPlayerCSSColor = winningPlayer === 'red' ? '#ff0000bf' : '#2256ff';
     const modalHTML = `
       <span style="color:${winnigPlayerCSSColor}">${winningPlayer}</span>&nbsp;player won!
@@ -236,20 +245,18 @@ export class GameComponent implements OnInit, OnDestroy {
 
   private onPlayerWinListener(): void {
     this.onPlayerWinSub = this.gameService.onPlayerWin().subscribe((data) => {
-      swal.fire({
-        title: this.buildWinnerModalTitleHTML(data.winningPlayer),
-        text: 'Would you like to play again?',
-        showCancelButton: true,
-        confirmButtonText: 'Yes',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.value === true) { // don't remove === true, I don't want other truthy values to pass
-          this.newGameEmitter(this.roomId);
-        } else if (!result.value) { // don't make it else, there are other truthy values than true
-          this.gameCancelEmitter(this.roomId);
-        }
-      });
+      this.score = data.score;
+      this.gameInProgress = false;
+      this.winningPlayer = data.winningPlayer;
     });
+  }
+
+  newGameQuestionBtnClicked(newGame: boolean): void {
+    if (newGame) {
+      this.newGameEmitter(this.roomId);
+    } else {
+      this.gameCancelEmitter(this.roomId);
+    }
   }
 
   private onNewMoveListener(): void {
@@ -258,7 +265,12 @@ export class GameComponent implements OnInit, OnDestroy {
       if (this.playerColor === 'red') {
         const checkWinnerResult = this.checkWinner(this.gameGridArray);
         if (checkWinnerResult.isThereWinner) {
-          this.playerWinEmitter(this.roomId, checkWinnerResult.winnerColor);
+          if (checkWinnerResult.winnerColor === 'red') {
+            this.score.redPlayerScore += 1;
+          } else {
+            this.score.bluePlayerScore += 1;
+          }
+          this.playerWinEmitter(this.roomId, checkWinnerResult.winnerColor, this.score);
         }
       }
     });
@@ -287,4 +299,9 @@ export class GameComponent implements OnInit, OnDestroy {
 export interface Cell {
   played: boolean;
   playerColor: 'blue' | 'red';
+}
+
+export interface Score {
+  bluePlayerScore: number;
+  redPlayerScore: number;
 }
