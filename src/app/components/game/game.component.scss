@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 15px 0;
+  margin: 10px 0;
 }
 
 .score p {
@@ -116,9 +116,6 @@
   .game-grid {
     height: 95vw;
     width: 95vw;
-  }
-  .header {
-    margin: 20px 0;
   }
   .game-end-container p,
   .score p {

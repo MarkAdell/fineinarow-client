@@ -2,8 +2,8 @@
   <div class="game-container">
     <div class="header">
       <div class="score">
-        <p>Red Player: {{score.redPlayerScore}}</p>
-        <p>Blue Player: {{score.bluePlayerScore}}</p>
+        <p><span class="red-player-color">Red</span> Player : {{score.redPlayerScore}}</p>
+        <p><span class="blue-player-color">Blue</span> Player : {{score.bluePlayerScore}}</p>
       </div>
       <div [ngClass]="{'visibility-hidden': gameInProgress}" class="game-end-container">
         <p>
