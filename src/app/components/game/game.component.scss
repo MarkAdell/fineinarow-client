@@ -16,12 +16,16 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 8px 0;
+  margin: 7px 0;
 }
 
 .score p {
   font-size: 1.3em;
-  margin: 5px 0;
+  margin: 3px 0;
+}
+
+.mat-stroked-button {
+  line-height: 25px;
 }
 
 .game-end-container {
