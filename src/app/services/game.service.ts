@@ -26,8 +26,8 @@ export class GameService {
     this.socket.emit('new move', { roomId, playerColor, row, col });
   }
 
-  public playerWin(roomId: string, winningPlayer: string): void {
-    this.socket.emit('player win', { roomId, winningPlayer });
+  public playerWin(roomId: string, winningPlayer: string, score): void {
+    this.socket.emit('player win', { roomId, winningPlayer, score });
   }
 
   public userLeave(): void {
