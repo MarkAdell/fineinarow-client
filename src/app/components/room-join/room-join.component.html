@@ -12,6 +12,6 @@
       </mat-error>
     </mat-form-field>
     <p *ngIf="!otherPlayerJoined && isRoomJoined">This room is empty, waiting for a player to join...</p>
-    <a [disabled]="!roomId.valid && !isRoomJoined" mat-raised-button (click)="onJoinClick()" color="primary">Join</a>
+    <a [disabled]="!roomId.valid || isRoomJoined" mat-raised-button (click)="onJoinClick()" color="primary">Join</a>
   </form>
 </div>

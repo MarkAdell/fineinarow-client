@@ -32,8 +32,9 @@ export class RoomJoinComponent implements OnInit {
   joinRoomFromURL(): void {
     const roomId = this.route.snapshot.queryParams.roomID;
     if (roomId && roomId.length === 5) {
+      this.roomId.setValue(roomId);
       this.gameService.joinRoom(roomId);
-    } else if (roomId){
+    } else if (roomId) {
       this.snackBar.open('Invalid room URL', 'x', { duration: 3000 });
     }
   }
@@ -47,6 +48,7 @@ export class RoomJoinComponent implements OnInit {
   private onRoomJoinedListener(): void {
     this.gameService.onRoomJoined().subscribe((data) => {
       this.isRoomJoined = true;
+      this.roomId.disable();
       localStorage.setItem('joinedRoomID', data.roomId);
       if (data.numberOfMembers === 1) {
         localStorage.setItem('player', 'red');
